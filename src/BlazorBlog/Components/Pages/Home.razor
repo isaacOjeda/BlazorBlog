@@ -43,13 +43,13 @@
                 @foreach (var post in viewModel.Posts)
                 {
                     <div class="post-preview">
-                        <NavLink href="/detail/123456">
+                        <a href="/blog/@post.Slug">
                             <h2 class="post-title">@post.Title</h2>
                             @if(!string.IsNullOrEmpty(post.Subtitle))
                             {
                                 <h3 class="post-subtitle">@post.Subtitle</h3>
                             }
-                        </NavLink>
+                        </a>
 
                         <p class="post-meta">
                             Posted by
