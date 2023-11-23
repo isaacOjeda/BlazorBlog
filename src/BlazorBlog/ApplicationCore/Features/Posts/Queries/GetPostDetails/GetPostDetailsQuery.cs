@@ -1,18 +1,20 @@
-﻿using BlazorBlog.Infrastructure.Persistence;
+﻿using BlazorBlog.ApplicationCore.Common.Errors;
+using BlazorBlog.Infrastructure.Persistence;
+using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazorBlog.ApplicationCore.Features.Posts.Queries.GetPostDetails;
 
-public class GetPostDetailsQuery(string slug) : IRequest<GetPostDetailsResponse>
+public class GetPostDetailsQuery(string slug) : IRequest<Result<GetPostDetailsResponse>>
 {
     public string Slug { get; set; } = slug;
 }
 
-public class GetPostDetailsHandler(AppDbContext context) : IRequestHandler<GetPostDetailsQuery, GetPostDetailsResponse>
+public class GetPostDetailsHandler(AppDbContext context) : IRequestHandler<GetPostDetailsQuery, Result<GetPostDetailsResponse>>
 {
 
-    public async Task<GetPostDetailsResponse> Handle(GetPostDetailsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetPostDetailsResponse>> Handle(GetPostDetailsQuery request, CancellationToken cancellationToken)
     {
         var post = await context.Posts
             .Include(p => p.Author)
@@ -21,10 +23,10 @@ public class GetPostDetailsHandler(AppDbContext context) : IRequestHandler<GetPo
 
         if (post == null)
         {
-            // throw new NotFoundException(nameof(Post), request.Id);
+            return Result.Fail(new NotFoundError($"Post with slug {request.Slug} not found"));
         }
 
-        return new GetPostDetailsResponse
+        return Result.Ok(new GetPostDetailsResponse
         {
             PostId = post.PostId,
             Title = post.Title,
@@ -44,8 +46,7 @@ public class GetPostDetailsHandler(AppDbContext context) : IRequestHandler<GetPo
             //     Created = c.Created,
             //     Updated = c.Updated
             // }).ToList()
-
-        };
+        });
     }
 }
 

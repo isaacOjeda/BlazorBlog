@@ -13,11 +13,9 @@
 </ol>
 
 
-<RadzenDataGrid LoadData="@LoadData" AllowColumnResize="true"
-                FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="@pageSize" 
+<RadzenDataGrid LoadData="@LoadData" AllowColumnResize="true" PageSize="@pageSize" 
                 AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Justify" ShowPagingSummary="true"
-                Data="@viewModel.Posts" TItem="GetPostsResponse.GetPostsItems" 
-                LogicalFilterOperator="LogicalFilterOperator.Or" Count="@viewModel.Count">
+                Data="@viewModel.Posts" TItem="GetPostsResponse.GetPostsItems" Count="@viewModel.Count">
 
     <Columns>
         <RadzenDataGridColumn TItem="GetPostsResponse.GetPostsItems" Property="PostId" Title="Id" />

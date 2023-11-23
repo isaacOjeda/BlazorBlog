@@ -1,8 +1,10 @@
 ﻿@page "/blog/{Slug}"
+
 @using BlazorBlog.ApplicationCore.Features.Posts.Queries.GetPostDetails
 
 @attribute [StreamRendering(true)]
 @inject ISender Sender
+@inject NavigationManager NavigationManager
 
 <PageTitle>Detail</PageTitle>
 
@@ -30,7 +32,7 @@
     <div class="container px-4 px-lg-5">
         <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
-                @if(postDetails is null)
+                @if (postDetails is null)
                 {
                     <div class="d-flex justify-content-center my-5">
                         <div class="spinner-border text-default" role="status">
@@ -58,6 +60,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        postDetails = await Sender.Send(new GetPostDetailsQuery(Slug));
+        var result = await Sender.Send(new GetPostDetailsQuery(Slug));
+
+        if (result.HasError<NotFoundError>())
+        {
+            NavigationManager.NavigateTo("/404");
+            return;
+        }
+        postDetails = result.Value;
     }
 }
