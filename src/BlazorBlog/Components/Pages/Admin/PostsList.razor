@@ -1,5 +1,9 @@
 ﻿@page "/admin/posts"
+@using BlazorBlog.ApplicationCore.Features.Posts.Queries.GetPosts
 @layout Layout.AdminLayout
+@rendermode InteractiveServer
+@inject ISender Sender
+
 
 <PageTitle>Posts</PageTitle>
 
@@ -9,7 +13,51 @@
 </ol>
 
 
+<RadzenDataGrid LoadData="@LoadData" AllowColumnResize="true"
+                FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="@pageSize" 
+                AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Justify" ShowPagingSummary="true"
+                Data="@viewModel.Posts" TItem="GetPostsResponse.GetPostsItems" 
+                LogicalFilterOperator="LogicalFilterOperator.Or" Count="@viewModel.Count">
+
+    <Columns>
+        <RadzenDataGridColumn TItem="GetPostsResponse.GetPostsItems" Property="PostId" Title="Id" />
+        <RadzenDataGridColumn TItem="GetPostsResponse.GetPostsItems" Property="Title" Title="Title" />
+        <RadzenDataGridColumn TItem="GetPostsResponse.GetPostsItems" Property="Author" Title="Author" />
+        <RadzenDataGridColumn TItem="GetPostsResponse.GetPostsItems" Property="Created" FormatString="{0:d}" Title="Created" />
+        <RadzenDataGridColumn TItem="GetPostsResponse.GetPostsItems" Property="Updated" FormatString="{0:d}" Title="Updated" />
+        <RadzenDataGridColumn TItem="GetPostsResponse.GetPostsItems" Property="Slug" Title="Slug" />
+    </Columns>
+</RadzenDataGrid>
+
 
 @code {
+    public int currentPage { get; set; } = 1;
+    public int pageSize { get; set; } = 10;
+    
+    public GetPostsResponse viewModel = new GetPostsResponse
+    {
+        Posts = new()
+    };
 
+
+    protected override async Task OnInitializedAsync()
+    {
+        viewModel = await Sender.Send(new GetPostsQuery
+        {
+            PageNumber = currentPage,
+            PageSize = pageSize
+        });        
+    }
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        currentPage = (int)Math.Ceiling((double)args.Skip.GetValueOrDefault() / args.Top.GetValueOrDefault()) + 1;
+        pageSize = args.Top.GetValueOrDefault();
+
+        viewModel = await Sender.Send(new GetPostsQuery
+        {
+            PageNumber = currentPage,
+            PageSize = pageSize
+        });
+    }
 }
