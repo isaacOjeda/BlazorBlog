@@ -1,7 +1,7 @@
 ﻿@page "/"
 @using BlazorBlog.ApplicationCore.Features.Posts.Queries.GetPosts
-@using MediatR
-@attribute [StreamRendering(true)]
+
+@attribute [StreamRendering]
 @inject ISender Sender
 
 <PageTitle>Home</PageTitle>
@@ -24,7 +24,7 @@
 <div class="container px-4 px-lg-5">
     <div class="row gx-4 gx-lg-5 justify-content-center">
         <div class="col-md-10 col-lg-8 col-xl-7">
-            @if(viewModel is null)
+            @if(_viewModel is null)
             {
                 <div class="d-flex justify-content-center my-5">
                     <div class="spinner-border text-default" role="status">
@@ -32,15 +32,15 @@
                     </div>
                 </div>
             }
-            else if(viewModel.Posts.Count == 0)
+            else if(_viewModel.Posts.Count == 0)
             {
                 <div class="alert alert-warning" role="alert">
                     No posts found.
                 </div>
             }
-            else if(viewModel.Posts.Count > 0)
+            else if(_viewModel.Posts.Count > 0)
             {
-                @foreach (var post in viewModel.Posts)
+                @foreach (var post in _viewModel.Posts)
                 {
                     <div class="post-preview">
                         <a href="/blog/@post.Slug">
@@ -53,7 +53,7 @@
 
                         <p class="post-meta">
                             Posted by
-                            <a href="#!">@post.Author</a>
+                            <a href="#">@post.Author</a>
                             on @post.Created.ToString("MMMM dd, yyyy")
                         </p>
                     </div>        
@@ -67,19 +67,19 @@
 @code {
 
     [SupplyParameterFromQuery(Name = "page")]
-    public int? currentPage { get; set; }
-    public int pageSize { get; set; } = 5;
+    public int? CurrentPage { get; set; }
+    public int PageSize { get; set; } = 5;
 
-    GetPostsResponse? viewModel = null;
+    GetPostsResponse? _viewModel;
 
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(1000);
 
-        viewModel = await Sender.Send(new GetPostsQuery
+        _viewModel = await Sender.Send(new GetPostsQuery
         {
-            PageNumber = currentPage.GetValueOrDefault(1),
-            PageSize = pageSize
+            PageNumber = CurrentPage.GetValueOrDefault(1),
+            PageSize = PageSize
         });
     }
 }                    

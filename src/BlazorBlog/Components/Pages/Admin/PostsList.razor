@@ -1,7 +1,10 @@
 ﻿@page "/admin/posts"
 @using BlazorBlog.ApplicationCore.Features.Posts.Queries.GetPosts
+
 @layout Layout.AdminLayout
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+
 @inject ISender Sender
 
 
@@ -49,7 +52,7 @@
 
     async Task LoadData(LoadDataArgs args)
     {
-        currentPage = (int)Math.Ceiling((double)args.Skip.GetValueOrDefault() / args.Top.GetValueOrDefault()) + 1;
+        currentPage = args.Skip.GetValueOrDefault() / args.Top.GetValueOrDefault() + 1;
         pageSize = args.Top.GetValueOrDefault();
 
         viewModel = await Sender.Send(new GetPostsQuery

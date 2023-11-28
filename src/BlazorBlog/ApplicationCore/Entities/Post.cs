@@ -14,5 +14,5 @@ public class Post
     public string AuthorId { get; set; } = default!;
 
     public User Author { get; set; } = null!;
-    public HashSet<Comment> Comments { get; set; } = new HashSet<Comment>();
+    public ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
 }

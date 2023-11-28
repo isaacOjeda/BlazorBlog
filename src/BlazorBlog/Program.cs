@@ -1,6 +1,7 @@
 using BlazorBlog.ApplicationCore.Common;
 using BlazorBlog.ApplicationCore.Entities;
 using BlazorBlog.Components;
+using BlazorBlog.Helpers;
 using BlazorBlog.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,12 +13,27 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddCascadingAuthenticationState();
+
+builder.Services.AddScoped<IdentityRedirectManager>();
+builder.Services.AddScoped<IdentityUserAccessor>();
+
+
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
         options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
     })
-    .AddIdentityCookies();
+    .AddIdentityCookies(config =>
+    {
+        config.ApplicationCookie?.Configure(options =>
+        {
+            options.LoginPath = "/Account/Login";
+            options.LogoutPath = "/Account/Logout";
+            options.AccessDeniedPath = "/Account/AccessDenied";
+            options.Cookie.Name = "BlazorBlog";
+        });
+    });
 
 
 builder.Services.AddDbContextFactory<AppDbContext>(options =>
@@ -79,7 +95,12 @@ async Task SeedData()
     // Admin User
     if (!context.Users.Any())
     {
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+        await roleManager.CreateAsync(new IdentityRole(Roles.Admin));
+        await roleManager.CreateAsync(new IdentityRole(Roles.User));
+
         var admin = new User
         {
             Email = "admin@balusoft.com",
