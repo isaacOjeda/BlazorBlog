@@ -2,6 +2,7 @@
 using BlazorBlog.ApplicationCore.Entities;
 using BlazorBlog.Infrastructure.Persistence;
 using MediatR;
+using Microsoft.EntityFrameworkCore.Internal;
 using System.ComponentModel.DataAnnotations;
 
 namespace BlazorBlog.ApplicationCore.Features.Posts.Commands.CreatePost;
@@ -16,10 +17,12 @@ public class CreatePostCommand(string title, string content, string subtitle) : 
     public string Subtitle { get; set; } = subtitle;
 }
 
-public class CreatePostCommandHandler(AppDbContext context, ICurrentUserService currentUser) : IRequestHandler<CreatePostCommand>
+public class CreatePostCommandHandler(DbContextFactory<AppDbContext> contextFactory, ICurrentUserService currentUser) : IRequestHandler<CreatePostCommand>
 {
     public async Task Handle(CreatePostCommand request, CancellationToken cancellationToken)
     {
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+
         var newPost = new Post
         {
             Title = request.Title,
