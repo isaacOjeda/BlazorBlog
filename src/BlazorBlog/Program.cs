@@ -1,7 +1,9 @@
 using BlazorBlog.ApplicationCore.Common;
+using BlazorBlog.ApplicationCore.Common.Contracts;
 using BlazorBlog.ApplicationCore.Entities;
+using BlazorBlog.Common.Helpers;
+using BlazorBlog.Common.Services;
 using BlazorBlog.Components;
-using BlazorBlog.Helpers;
 using BlazorBlog.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +19,7 @@ builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<IdentityUserAccessor>();
-
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 builder.Services.AddAuthentication(options =>
     {

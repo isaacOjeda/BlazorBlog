@@ -1,7 +1,7 @@
 ﻿using BlazorBlog.ApplicationCore.Entities;
 using Microsoft.AspNetCore.Identity;
 
-namespace BlazorBlog.Helpers;
+namespace BlazorBlog.Common.Helpers;
 
 internal sealed class IdentityUserAccessor(UserManager<User> userManager, IdentityRedirectManager redirectManager)
 {

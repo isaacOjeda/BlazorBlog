@@ -16,7 +16,7 @@ public class GetPostsHandler(IDbContextFactory<AppDbContext> dbFactory) : IReque
 
     public async Task<GetPostsResponse> Handle(GetPostsQuery request, CancellationToken cancellationToken)
     {
-        using var context = dbFactory.CreateDbContext();
+        await using var context = await dbFactory.CreateDbContextAsync(cancellationToken);
 
         var response = new GetPostsResponse
         {

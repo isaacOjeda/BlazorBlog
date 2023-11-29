@@ -74,8 +74,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(1000);
-
         _viewModel = await Sender.Send(new GetPostsQuery
         {
             PageNumber = CurrentPage.GetValueOrDefault(1),

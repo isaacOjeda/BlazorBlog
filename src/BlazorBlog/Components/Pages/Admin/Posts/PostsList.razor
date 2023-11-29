@@ -16,6 +16,10 @@
 </ol>
 
 
+<!-- new Post button link -->
+<a href="/admin/posts/create" class="btn btn-primary mb-4">New Post</a>
+
+
 <RadzenDataGrid LoadData="@LoadData" AllowColumnResize="true" PageSize="@pageSize" 
                 AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Justify" ShowPagingSummary="true"
                 Data="@viewModel.Posts" TItem="GetPostsResponse.GetPostsItems" Count="@viewModel.Count">

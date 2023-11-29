@@ -14,5 +14,13 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
             .WithMany(user => user.Posts)
             .HasForeignKey(post => post.AuthorId)
             .OnDelete(DeleteBehavior.NoAction);
+
+
+        builder.Property(p => p.Slug)
+            .HasMaxLength(200)
+            .IsRequired();
+
+        builder.HasIndex(p => p.Slug)
+            .IsUnique();
     }
 }

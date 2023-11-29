@@ -1,0 +1,58 @@
+﻿@page "/admin/posts/create"
+@using BlazorBlog.ApplicationCore.Features.Posts.Commands.CreatePost
+@attribute [Authorize(Roles = "Admin")]
+@layout Layout.AdminLayout
+@rendermode InteractiveServer
+
+@inject ISender Sender
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create Post</PageTitle>
+
+<h1 class="mt-4">Create Post</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item">
+        <a href="/admin/posts">Posts</a>
+    </li>
+    <li class="breadcrumb-item active">Create Post</li>
+</ol>
+
+<EditForm Model="Command" method="post" OnValidSubmit="SavePost" FormName="newPost">
+    <DataAnnotationsValidator />
+    <ValidationSummary class="text-danger" role="alert" />
+
+    <input type="text" class="form-control" @bind="Command.Title" placeholder="Title"/>
+    <textarea class="form-control" placeholder="Substract" @bind="Command.Subtitle"></textarea>
+    <MarkdownEditor ValueHTMLChanged="@OnMarkdownValueHTMLChanged" SpellChecker="false"/>
+    <button type="submit" class="btn btn-primary">Save</button>
+</EditForm>
+
+@code {
+
+
+    [SupplyParameterFromForm]
+    public CreatePostCommand Command { get; set; } =
+        new(string.Empty, string.Empty, string.Empty);
+
+    protected override void OnInitialized()
+    {
+        
+    }
+
+    Task OnMarkdownValueHTMLChanged(string value)
+    {
+        Command.Content = value;
+
+        return Task.CompletedTask;
+    }
+
+
+    async Task SavePost()
+    {
+        await Sender.Send(Command);
+
+        Command = new CreatePostCommand(string.Empty, string.Empty, string.Empty);
+
+        NavigationManager.NavigateTo("/admin/posts");
+    }
+}
