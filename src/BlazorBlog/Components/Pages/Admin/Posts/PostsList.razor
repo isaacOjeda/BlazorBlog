@@ -2,7 +2,7 @@
 @using BlazorBlog.ApplicationCore.Features.Posts.Queries.GetPosts
 
 @layout Layout.AdminLayout
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [Authorize(Roles = "Admin")]
 
 @inject ISender Sender
@@ -41,7 +41,7 @@
     
     public GetPostsResponse viewModel = new GetPostsResponse
     {
-        Posts = new()
+        Posts = new List<GetPostsResponse.GetPostsItems>()
     };
 
 
